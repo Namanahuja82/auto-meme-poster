@@ -33,9 +33,17 @@ jobs:
 
       - name: Generate Meme
         run: node index.js
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          IMGFLIP_USERNAME: ${{ secrets.IMGFLIP_USERNAME }}
+          IMGFLIP_PASSWORD: ${{ secrets.IMGFLIP_PASSWORD }}
 
       - name: Post Meme to Twitter
         run: python main.py
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
 
       - name: Upload meme image (artifact, optional)
         uses: actions/upload-artifact@v4
