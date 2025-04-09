@@ -90,9 +90,17 @@ async function generateMeme() {
 }
 
 const memeuri = await generateMeme();
+console.log("🖼️ Meme URL:", memeuri);
 
 const fileName = path.basename(memeuri); 
-const savePath = path.resolve('./memes', fileName);
+const memesDir = path.resolve('./memes');
+const savePath = path.resolve(memesDir, fileName);
+
+// ✅ Create memes folder if it doesn't exist
+if (!fs.existsSync(memesDir)) {
+  fs.mkdirSync(memesDir);
+  console.log("📁 Created memes folder");
+}
 
 const downloadImage = async (url, filepath) => {
   try {
@@ -110,13 +118,14 @@ const downloadImage = async (url, filepath) => {
       writer.on('error', reject);
     });
   } catch (error) {
-    console.error('Error downloading the image:', error);
+    console.error('❌ Error downloading the image:', error);
+    throw error;
   }
 };
 
 await downloadImage(memeuri, savePath);
-console.log('Image downloaded successfully!');
+console.log('✅ Image downloaded successfully!');
 
 // Save the filename for Python to use
 fs.writeFileSync('latest-meme.txt', `memes/${fileName}`);
-console.log(`Saved meme path to latest-meme.txt: memes/${fileName}`);
+console.log(`📄 Saved meme path to latest-meme.txt: memes/${fileName}`);
