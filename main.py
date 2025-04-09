@@ -9,12 +9,15 @@ USERNAME = os.getenv("USERNAME")
 EMAIL = os.getenv("EMAIL")
 PASSWORD = os.getenv("PASSWORD")
 
+# Initialize client
 client = Client(language='en-US')
 
 async def main():
     try:
+        # Try loading cookies
         client.load_cookies("cookies.json")
         print("Loaded cookies from file.")
+
         user_info = await client.get_current_user()
         print(f"Logged in as: {user_info.username}")
 
@@ -28,24 +31,27 @@ async def main():
                 cookies_file='cookies.json'
             )
             print("Login successful.")
+
+            # Save cookies
             client.save_cookies("cookies.json")
             print("Cookies saved.")
-
         except Exception as login_err:
             print("Login failed:", login_err)
             return
 
-    # Read generated meme path
+    # Read the latest meme filename
     try:
         with open("latest-meme.txt", "r") as f:
-            meme_path = f.read().strip()
-        print(f"Uploading meme from path: {meme_path}")
-        media_ids = [await client.upload_media(meme_path)]
+            filename = f.read().strip()
+            filepath = f"memes/{filename}"
+            print(f"Uploading meme from: {filepath}")
+
+            media_ids = [await client.upload_media(filepath)]
     except Exception as file_err:
-        print("Failed to read or upload meme file:", file_err)
+        print("Failed to read or upload meme:", file_err)
         return
 
-    # Create tweet
+    # Tweet it
     try:
         await client.create_tweet(media_ids=media_ids)
         print("Tweet posted successfully.")
